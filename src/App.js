@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ViewerTemplate from './components/ViewerTemplate';
 import SpaceNavigator from './components/SpaceNavagator';
 import Viewer from './components/Viewer';
+import moment from 'moment';
 import * as api from './lib/api';
 
 class App extends Component {
@@ -47,16 +48,36 @@ class App extends Component {
     });
   }
 
+  handlePrev = () => {
+    const { date } = this.state;
+    const prevDate = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
+    console.log("prevDate", prevDate);
+
+    this.getAPOD(prevDate);
+  }
+
+  handleNext = () => {
+    const { date, maxDate } = this.state;
+
+    if(date === maxDate) return;
+
+    const nextDate = moment(date).add(1, 'days').format('YYYY-MM-DD');
+    console.log("nextDate", nextDate);
+
+    this.getAPOD(nextDate);
+  }
+
   componentDidMount() {
     this.getAPOD();
   }
 
   render() {
-    const {url, mediaType, loading} = this.state;
+    const { url, mediaType, loading } = this.state;
+    const { handlePrev, handleNext } = this;
 
     return (
       <ViewerTemplate
-        spaceNavigator={<SpaceNavigator/>}
+        spaceNavigator={<SpaceNavigator onPrev={handlePrev} onNext={handleNext}/>}
         viewer={(
           <Viewer
             url={url}
